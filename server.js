@@ -268,11 +268,9 @@ app.get('/game/:appid', async (req, res) => {
     html += `<p class="info">Kazanılan: ${kazanilanlar.length} / Toplam: ${achievements.length}</p>`;
     html += `<h2>Eksik Başarımlar</h2>`;
 
-    const chapterOrder = [
-      'Bölüm 1', 'Bölüm 2', 'Bölüm 3', 'Bölüm 4', 'Bölüm 5', 'Bölüm 6',
-      'Epilog', 'Hikaye Boyunca (Kaçırılabilir)', 'Serbest Gezinme',
-      'Red Dead Online', 'Diğer'
-    ];
+          const chapterOrder = (guide && guide.chapterOrder) 
+      ? [...guide.chapterOrder, 'Diğer'] 
+      : ['Diğer'];
 
     const gruplar = {};
     kazanilmayanlar.forEach(a => {

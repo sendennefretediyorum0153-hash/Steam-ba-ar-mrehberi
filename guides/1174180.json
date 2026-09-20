@@ -1,5 +1,6 @@
 {
   "gameName": "Red Dead Redemption 2",
+    "chapterOrder": ["Bölüm 1", "Bölüm 2", "Bölüm 3", "Bölüm 4", "Bölüm 5", "Bölüm 6", "Epilog", "Hikaye Boyunca (Kaçırılabilir)", "Serbest Gezinme", "Red Dead Online"],
   "achievements": {
     "Back in the Mud": { "chapter": "Bölüm 1", "howTo": "Bölüm 1'deki ilk hikaye görevi olan 'Outlaws from the West'i tamamlayın." },
     "Just a Scratch": { "chapter": "Bölüm 1", "howTo": "Bölüm 1'de 'Enter, Pursued by a Memory' görevinde John Marston'ı kurtarın." },
