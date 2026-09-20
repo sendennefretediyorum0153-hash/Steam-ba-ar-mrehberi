@@ -103,9 +103,34 @@ const style = `
     margin-right: 10px;
     vertical-align: middle;
   }
-  .game-item {
+    .game-item {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .playtime {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-left: 10px;
+    white-space: nowrap;
+  }
+      .baslik-satiri {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #2a475e;
+    padding-bottom: 10px;
+  }
+  .baslik-satiri h1 {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .playtime-buyuk {
+    font-size: 15px;
+    opacity: 0.8;
+    white-space: nowrap;
   }
   .game-header {
     width: 100%;
@@ -122,6 +147,8 @@ const style = `
 app.get('/', (req, res) => {
   const html = style + `
     <h1>🎮 Steam Başarım Rehberi</h1>
+       <p>Steam hesabındaki oyunlarını incele, eksik başarımlarını gör ve bazı popüler oyunlar için adım adım nasıl kazanılacağını öğren.</p>
+    <p style="font-size: 14px; opacity: 0.8;">⚠️ Profilinin ve oyun ayrıntılarının "Herkese Açık" olması gerekiyor, aksi halde veri çekilemez.</p>
     <p>Steam profil linkini veya SteamID'ni gir:</p>
     <form action="/games" method="get">
       <input type="text" name="steamid" placeholder="örn: steamcommunity.com/id/kullaniciadi" 
@@ -172,15 +199,31 @@ app.get('/games', async (req, res) => {
 
     const achievementGames = games.filter(g => g.has_community_visible_stats);
 
-    let html = style + '<h1>🎮 Oyunlar</h1><ul>';
+    let html = style + '<h1>🎮 Oyunlar</h1>';
+    html += `<input type="text" id="aramaKutusu" onkeyup="oyunAra()" placeholder="Oyun ara..." 
+             style="width: 100%; padding: 10px; border-radius: 6px; border: none; margin-bottom: 15px; box-sizing: border-box;">`;
+    html += '<ul id="oyunListesi">';
     achievementGames.forEach(game => {
       const iconUrl = `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
-      html += `<li><a href="/game/${game.appid}?steamid=${steamId}" class="game-item">
+      const saat = (game.playtime_forever / 60).toFixed(1);
+         html += `<li><a href="/game/${game.appid}?steamid=${steamId}&playtime=${saat}" class="game-item">
                  <img src="${iconUrl}" class="game-icon" onerror="this.style.display='none'">
-                 ${game.name}
+                 <span>${game.name}</span>
                </a></li>`;
     });
-    html += '</ul><a href="/">← Farklı Profil Dene</a>';
+       html += '</ul><a href="/">← Farklı Profil Dene</a>';
+    html += `
+      <script>
+        function oyunAra() {
+          const girdi = document.getElementById('aramaKutusu').value.toLowerCase();
+          const liste = document.getElementById('oyunListesi').getElementsByTagName('li');
+          for (let i = 0; i < liste.length; i++) {
+            const isim = liste[i].textContent.toLowerCase();
+            liste[i].style.display = isim.includes(girdi) ? '' : 'none';
+          }
+        }
+      </script>
+    `;
 
     res.send(html);
   } catch (error) {
@@ -214,10 +257,14 @@ app.get('/game/:appid', async (req, res) => {
     const guide = getGuide(appId);
     const kazanilanlar = achievements.filter(a => a.achieved === 1);
     const kazanilmayanlar = achievements.filter(a => a.achieved === 0);
-
-       const headerUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/header.jpg`;
+    const headerUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/header.jpg`;
+    const playtime = req.query.playtime;
     let html = style + `<img src="${headerUrl}" class="game-header" onerror="this.style.display='none'">`;
-    html += `<h1>🏆 Başarımlar</h1>`;
+    html += `<div class="baslik-satiri"><h1>🏆 Başarımlar</h1>`;
+    if (playtime) {
+      html += `<span class="playtime-buyuk">🕒 ${playtime} saat oynandı</span>`;
+    }
+    html += `</div>`;
     html += `<p class="info">Kazanılan: ${kazanilanlar.length} / Toplam: ${achievements.length}</p>`;
     html += `<h2>Eksik Başarımlar</h2>`;
 
