@@ -96,6 +96,22 @@ const style = `
     margin-bottom: 20px;
   }
   .kazanildi {
+    .game-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  .game-item {
+    display: flex;
+    align-items: center;
+  }
+  .game-header {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
     opacity: 0.6;
     border-left: 4px solid #5c9e5c;
   }
@@ -158,7 +174,11 @@ app.get('/games', async (req, res) => {
 
     let html = style + '<h1>🎮 Oyunlar</h1><ul>';
     achievementGames.forEach(game => {
-      html += `<li><a href="/game/${game.appid}?steamid=${steamId}">${game.name}</a></li>`;
+      const iconUrl = `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
+      html += `<li><a href="/game/${game.appid}?steamid=${steamId}" class="game-item">
+                 <img src="${iconUrl}" class="game-icon" onerror="this.style.display='none'">
+                 ${game.name}
+               </a></li>`;
     });
     html += '</ul><a href="/">← Farklı Profil Dene</a>';
 
@@ -195,7 +215,9 @@ app.get('/game/:appid', async (req, res) => {
     const kazanilanlar = achievements.filter(a => a.achieved === 1);
     const kazanilmayanlar = achievements.filter(a => a.achieved === 0);
 
-    let html = style + `<h1>🏆 Başarımlar</h1>`;
+       const headerUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/header.jpg`;
+    let html = style + `<img src="${headerUrl}" class="game-header" onerror="this.style.display='none'">`;
+    html += `<h1>🏆 Başarımlar</h1>`;
     html += `<p class="info">Kazanılan: ${kazanilanlar.length} / Toplam: ${achievements.length}</p>`;
     html += `<h2>Eksik Başarımlar</h2>`;
 
